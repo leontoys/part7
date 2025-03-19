@@ -19,9 +19,15 @@ const useResource = (baseUrl) => {
   const [resources, setResources] = useState([])
 
   // ...
+  axios.get(baseUrl)
+  .then((response)=>setResources(response.data))
+  .catch(error=>console.error)
 
   const create = (resource) => {
     // ...
+    axios.post(baseUrl,resource)
+    .then(response=>response.data)
+    .catch(error=>console.error(error))
   }
 
   const service = {
