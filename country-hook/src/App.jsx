@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+//import { useCountry } from './hooks'
 
 const useField = (type) => {
   const [value, setValue] = useState('')
@@ -18,7 +19,26 @@ const useField = (type) => {
 const useCountry = (name) => {
   const [country, setCountry] = useState(null)
 
-  useEffect(() => {})
+  useEffect(() => {
+
+      if(name){
+        axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
+        .then(response=>{
+          let result = {
+            found : true,
+            data : {
+              name : response.data.name.common,
+              capital : response.data.capital[0],
+              population : response.data.population,
+              flag : response.data.flags.png
+            }
+          }
+          setCountry(result)
+        })  
+        .catch(error => console.log(error))
+      }
+
+  },[name])
 
   return country
 }
