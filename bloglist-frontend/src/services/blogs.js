@@ -43,7 +43,7 @@ const deleteBlog = async (blogId) => {
   try {
     const response = await axios.delete(`${baseUrl}/${blogId}`, config)
     console.log('response.data', response.data)
-    return response.data
+    return blogId
   } catch (error) {
     console.log('error', error)
     return

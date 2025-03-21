@@ -8,7 +8,6 @@ import BlogForm from './components/BlogForm'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const App = () => {
-//  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -17,7 +16,7 @@ const App = () => {
 
   //useReducer
   const notificationReducer = (state,action) => {
-    console.log("action",action)
+    console.log('action',action)
     switch(action.type){
     case 'ERROR_LOGIN' :
       return {
@@ -42,7 +41,7 @@ const App = () => {
     case 'SUCCESS_UPDATEBLOG':
       return{
         message : 'liked blog',
-        className : 'error'
+        className : 'notification'
       }
     case 'ERROR_UPDATEBLOG':
       return{
@@ -71,9 +70,10 @@ const App = () => {
 
   const [notification,notificationDispatch] = useReducer(notificationReducer,{ message:'',className:'' })
 
-
+  //Query Client and Mutation
   const queryClient = useQueryClient()
-  const newBlogMutation = useMutation({ mutationFn:blogService.create,
+  const newBlogMutation = useMutation({
+    mutationFn:blogService.create,
     onSuccess : (returnedBlog) => {
       //get the blogs from the state?
       const blogs = queryClient.getQueryData(['blogs']) || []
@@ -89,6 +89,50 @@ const App = () => {
       setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
     }
   })
+  const updateBlogMutation = useMutation({
+    mutationFn : blogService.update,
+    onSuccess : (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])||[]
+      console.log(updatedBlog,blogs)
+      const updatedBlogs = blogs.map(blog => blog.id===updatedBlog.id?updatedBlog:blog)
+      console.log(updatedBlogs)
+      queryClient.setQueryData(['blogs'],updatedBlogs)
+      notificationDispatch({ type : 'SUCCESS_UPDATEBLOG' })
+      setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
+    },
+    onError : (exception) => {
+      console.log(exception.message)
+      notificationDispatch({ type : 'ERROR_UPDATEBLOG' })
+      setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
+    }
+  })
+  const deleteBlogMutation = useMutation({
+    mutationFn : blogService.deleteBlog,
+    onSuccess : (id) => {
+      const blogs = queryClient.getQueryData(['blogs'])||[]
+      console.log('typeof id:', typeof id)
+      blogs.forEach(blog => console.log('typeof blog.id:', typeof blog.id, 'value:', blog.id))
+      console.log('Deleting blog with id:', id)
+      console.log('Existing blogs:', blogs)
+      const updatedBlogs = blogs.filter(blog => blog.id !== id)
+      console.log('After deletion:', updatedBlogs)
+      queryClient.setQueryData(['blogs'],updatedBlogs)
+      notificationDispatch({ type : 'SUCCESS_DELETEBLOG' })
+      setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
+    },
+    onError : (exception) => {
+      console.log(exception.message)
+      notificationDispatch({ type : 'ERROR_DELETEBLOG' })
+      setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
+    }
+  })
+
+  const result = useQuery({
+    queryKey : ['blogs'],
+    queryFn : blogService.getAll
+  })
+
+  const blogs = result.data || []
 
   //reference
   const blogFormRef = useRef()
@@ -110,21 +154,6 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, []) // The empty dependency array means this effect runs only once after the initial render
-
-  const result = useQuery({
-    queryKey : ['blogs'],
-    queryFn : blogService.getAll
-  })
-
-  // useEffect(() => {
-  //   console.log('se effect -- blog get all')
-  //   //blogService.getAll().then((blogs) => setBlogs(blogs))
-  //   if(result.data){
-  //     setBlogs(result.data)
-  //   }
-  // }, [result.data])
-
-  const blogs = result.data || []
 
 
   const handleLogin = async (event) => {
@@ -166,57 +195,15 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
-    // try {
-
-      newBlogMutation.mutate(blogObject)
-      //blogService.create(blogObject)
-        // .then((returnedBlog) => {
-        //   setBlogs(blogs.concat(returnedBlog))
-
-        //   notificationDispatch({ type : 'SUCCESS_ADDBLOG' })
-        //   setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
-
-    //     }
-    // } catch (exception) {
-    //   console.log(exception.message)
-    //   notificationDispatch({ type : 'ERROR_ADDBLOG' })
-    //   setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
-    // }
+    newBlogMutation.mutate(blogObject)
   }
 
   const updateBlog = (blogObject) => {
-    // try {
-    //   console.log('----update blog-----')
-    //   blogService.update(blogObject).then((returnedBlog) => {
-    //     console.log(returnedBlog)
-    //     const updatedBlogs = blogs.map((blog) =>
-    //       blog.id === returnedBlog.id ? returnedBlog : blog,
-    //     )
-    //     setBlogs(updatedBlogs)
-    //   })
-    // } catch (exception) {
-    //   notificationDispatch({ type : 'ERROR_UPDATEBLOG' })
-    //   setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
-    // }
+    updateBlogMutation.mutate(blogObject)
   }
 
-  const deleteBlog = (blogId) => {
-    // try {
-    //   console.log('----delete blog-----')
-    //   blogService.deleteBlog(blogId).then(() => {
-    //     // Filter out the deleted blog from the list
-    //     const updatedBlogs = blogs.filter((blog) => blog.id !== blogId)
-    //     setBlogs(updatedBlogs)
-
-    //     notificationDispatch({ type : 'SUCCESS_DELETEBLOG' })
-    //     setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
-    //   })
-    // } catch (exception) {
-
-    //   notificationDispatch({ type : 'ERROR_DELETEBLOG' })
-    //   setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
-
-    // }
+  const deleteBlog = (id) => {
+    deleteBlogMutation.mutate(id)
   }
 
   const loginForm = () => (
