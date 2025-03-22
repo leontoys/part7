@@ -7,13 +7,48 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useParams, Navigate, replace,
+  useNavigate, useMatch
+} from 'react-router-dom'
+
+const LoginForm = (props) => {
+
+  return (
+    <div>
+      <form onSubmit={props.handleLogin}>
+        <h2>login to application</h2>
+        <div>
+      username
+          <input
+            id='username'
+            type='text'
+            value={props.username}
+            name='Username'
+            onChange={({ target }) => props.setUsername(target.value)}
+          />
+        </div>
+        <div>
+      password
+          <input
+            id='password'
+            type='password'
+            value={props.password}
+            name='Password'
+            onChange={({ target }) => props.setPassword(target.value)}
+          />
+        </div>
+        <button id='login-button' type='submit'>
+      login
+        </button>
+      </form>
+    </div>
+  )
+}
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   //const [user, setUser] = useState(null)
-
+  const [username,setUsername] = useState('')
+  const [password,setPassword] = useState('')
 
   //Query Client and Mutation
   const queryClient = useQueryClient()
@@ -214,35 +249,6 @@ const App = () => {
     deleteBlogMutation.mutate(id)
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <h2>login to application</h2>
-      <div>
-        username
-        <input
-          id='username'
-          type='text'
-          value={username}
-          name='Username'
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          id='password'
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button id='login-button' type='submit'>
-        login
-      </button>
-    </form>
-  )
-
   // sort by value
   blogs.sort((a, b) => b.likes - a.likes)
 
@@ -321,20 +327,24 @@ const App = () => {
       <Router>
         <Notification message={notification.message} className={notification.className} />
         <div>
-          <Link to='/'>home</Link>
-          <Link to='/blogs'> blogs </Link>
-          <Link to='/users'> users </Link>
-          {user &&
-            <p>
-              {user.name} logged in <button onClick={handleLogout}>logout</button>
-            </p>}
+          <nav>
+            <Link to='/'>home</Link>
+            <Link to='/blogs'> blogs </Link>
+            <Link to='/users'> users </Link>
+            {user &&
+              <p>
+                {user.name} logged in <button onClick={handleLogout}>logout</button>
+              </p>}
+          </nav>
         </div>
-        {!user && loginForm()}
         <Routes>
-          <Route path='/' element={<Home/>}></Route>
-          <Route path='/users' element={<Users/>}></Route>
+          <Route path='/' element={user?<Home/>:<LoginForm handleLogin={handleLogin}
+            username={username} setUsername={setUsername}
+            password={password} setPassword={setPassword}
+          />}></Route>
+          <Route path='/users' element={user?<Users/> : <Navigate replace to='/'/>}></Route>
           <Route path='/users/:id' element={<User users={users}/>}></Route>
-          <Route path='/blogs' element={<Blogs/>}></Route>
+          <Route path='/blogs' element={user?<Blogs/>:<Navigate replace to='/'/>}></Route>
           <Route path='/blogs/:id' element={<Blog blogs={blogs}
             updateBlog={updateBlog} deleteBlog={deleteBlog}/>}></Route>
         </Routes>
