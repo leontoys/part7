@@ -76,13 +76,43 @@ Content-Type: application/json
 ###Create a new blog - with logged in user
 POST {{baseUrl}}/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxlb24iLCJpZCI6IjY2YzhmMTU5MmI3MGU2ZTY2OTMxNTljMiIsImlhdCI6MTcyNDQ1MTYxNH0.EJaMHctTKQZZWZxZdBQPvYV6ul2teIMfYwM5hk7Ewkc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlciIsImlkIjoiNjdkZTM3ZGQ5ODgyOGVmNWViYTMxZWJhIiwiaWF0IjoxNzQyNjc2MzEyfQ.MyU0dxha4wmMruQm8EaeJbfs_zUfK6xJksIhtXb0JBQ
 
 {
   "title": "Leon Blogs4",
   "author": "Leon",
   "url": "https://testblogs.com//",
   "likes": 1000
+}
+
+###Create a new blog - with logged in user
+POST {{baseUrl}}/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlciIsImlkIjoiNjdkZTM3ZGQ5ODgyOGVmNWViYTMxZWJhIiwiaWF0IjoxNzQyNjc2MzEyfQ.MyU0dxha4wmMruQm8EaeJbfs_zUfK6xJksIhtXb0JBQ
+
+{
+  "title": "Leon Blogs4",
+  "author": "Leon",
+  "url": "https://testblogs.com//",
+  "likes": 1000,
+  "user": "67de37dd98828ef5eba31eba",
+  "id": "67df217bbda2193dffa0e193",
+ " comments:":["this is awesome"]
+}
+
+###Create a new blog - with logged in user
+PUT {{baseUrl}}/api/blogs/67df217bbda2193dffa0e193/comments
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlciIsImlkIjoiNjdkZTM3ZGQ5ODgyOGVmNWViYTMxZWJhIiwiaWF0IjoxNzQyNjc2MzEyfQ.MyU0dxha4wmMruQm8EaeJbfs_zUfK6xJksIhtXb0JBQ
+
+{
+  "title": "Leon Blogs4",
+  "author": "Leon",
+  "url": "https://testblogs.com//",
+  "likes": 1000,
+  "user": "67de37dd98828ef5eba31eba",
+  "id": "67df217bbda2193dffa0e193",
+ "comments":["this is awesome","we can add new"]
 }
 
 

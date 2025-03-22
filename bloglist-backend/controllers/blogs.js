@@ -142,7 +142,48 @@ blogsRouter.put(
       author: body.author,
       url: body.url,
       likes: body.likes,
+      user: user.id
+    };
+
+    Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+      .populate("user", { username: 1, name: 1 })
+      .then((updatedBlog) => {
+        logger.info("blog updated in the backend");
+        logger.info(updatedBlog);
+        response.json(updatedBlog);
+      })
+      .catch((error) => next(error));
+  },
+);
+
+blogsRouter.put(
+  "/:id/comments",
+  middleware.userExtractor,
+  async (request, response, next) => {
+    console.log("----reached backend put----");
+    logger.info("patch", request.body);
+    const body = request.body;
+
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: "token invalid" });
+    }
+    console.log("token decoded with middleware");
+    const user = request.user;
+    //const user = await User.findById(decodedToken.id)
+
+    if (!body.title || !body.url) {
+      return response.sendStatus(400);
+    }
+
+    console.log(body.comments)
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
       user: user.id,
+      comments : body.comments
     };
 
     Blog.findByIdAndUpdate(request.params.id, blog, { new: true })

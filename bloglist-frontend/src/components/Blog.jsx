@@ -46,11 +46,21 @@ const Blog = ({ blogs, updateBlog, deleteBlog }) => {
 
 
   return (
-    <div style={blogStyle} className="blog">
-      <h2>{blog.title} {blog.author}</h2>
-      <div>{blog.url}</div>
-      {blog.likes} <button onClick={likeBlog}>like</button>
-    </div>
+    <>
+      <div style={blogStyle} className="blog">
+        <h2>{blog.title} {blog.author}</h2>
+        <div>{blog.url}</div>
+        {blog.likes} <button onClick={likeBlog}>like</button>
+        <p>added by {blog.user.username}</p>
+      </div>
+      <div>
+        <h2>comments</h2>
+        <form>
+          <input/>
+          <button></button>
+        </form>
+      </div>
+    </>
   )
 }
 
