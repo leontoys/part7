@@ -255,13 +255,16 @@ const App = () => {
         </Togglable>
         <br />
         {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            loggedUser={user}
-            updateBlog={updateBlog}
-            deleteBlog={deleteBlog}
-          />
+          <Link key={blog.id} to={`/blogs/${blog.id}`}>
+            <p>{blog.title} {blog.author}</p>
+          </Link>
+          // <Blog
+          //   key={blog.id}
+          //   blog={blog}
+          //   loggedUser={user}
+          //   updateBlog={updateBlog}
+          //   deleteBlog={deleteBlog}
+          // />
         ))}
       </div>
     )
@@ -306,10 +309,10 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={notification.message} className={notification.className} />
-      {!user && loginForm()}
-      {user && blogForm()}
       <Router>
+        <Notification message={notification.message} className={notification.className} />
+        {!user && loginForm()}
+        {user && blogForm()}
         <div>
 
         </div>

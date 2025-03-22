@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { BrowserRouter as Router, Link  } from 'react-router-dom'
 
 const Blog = ({ blog, updateBlog, loggedUser, deleteBlog }) => {
   const [visible, setVisible] = useState(false)
@@ -18,7 +19,7 @@ const Blog = ({ blog, updateBlog, loggedUser, deleteBlog }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
   const likeBlog = (event) => {
     event.preventDefault()
@@ -32,8 +33,8 @@ const Blog = ({ blog, updateBlog, loggedUser, deleteBlog }) => {
       url: blog.url,
       likes: updatedLikes,
       user: blog.user,
-    });
-  };
+    })
+  }
 
   const removeBlog = (event) => {
     event.preventDefault()
@@ -42,17 +43,20 @@ const Blog = ({ blog, updateBlog, loggedUser, deleteBlog }) => {
       console.log('blog id', blog.id)
       deleteBlog(blog.id)
     }
-  };
+  }
 
   //console.log('logged user', loggedUser.username)
   //console.log('blog user', blog.user.username)
   return (
     <div style={blogStyle} className="blog">
-      <div style={hideWhenVisible} className="blogInfo">
-        {blog.title} {blog.author}
-        <button onClick={toggleVisibility}>view</button>
-      </div>
-      <div style={showWhenVisible} className="blogDetails">
+      <Router>
+        <div style={hideWhenVisible} className="blogInfo">
+          <Link to={`/blogs/${blog.id}`}>
+            {blog.title} {blog.author}
+          </Link>
+          {/* <button onClick={toggleVisibility}>view</button> */}
+        </div>
+      {/* <div style={showWhenVisible} className="blogDetails">
         <div>
           {blog.title} {blog.author}{''}
           <button onClick={toggleVisibility}>cancel</button>
@@ -67,17 +71,17 @@ const Blog = ({ blog, updateBlog, loggedUser, deleteBlog }) => {
             <button onClick={removeBlog}>delete</button>
           </div>
         )}
-      </div>
-      <div></div>
+      </div> */}
+      </Router>
     </div>
-  );
-};
+  )
+}
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   updateBlog: PropTypes.func.isRequired,
   loggedUser: PropTypes.object.isRequired,
   deleteBlog: PropTypes.func.isRequired,
-};
+}
 
 export default Blog
