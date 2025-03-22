@@ -1,3 +1,4 @@
+import { Table, Form, Button, FormGroup } from 'react-bootstrap'
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
@@ -25,11 +26,11 @@ const BlogForm = ({ createBlog }) => {
   const handleUrlChange = ({ target }) => setUrl(target.value)
 
   return (
-    <form onSubmit={addBlog}>
+    <Form onSubmit={addBlog}>
       <h2>Create New</h2>
-      <div>
-        title
-        <input
+      <FormGroup>
+        <Form.Label>title:</Form.Label>
+        <Form.Control
           id='title'
           type='text'
           value={title}
@@ -37,10 +38,10 @@ const BlogForm = ({ createBlog }) => {
           onChange={handleTitleChange}
           placeholder='title'
         />
-      </div>
-      <div>
-        author
-        <input
+      </FormGroup>
+      <FormGroup>
+        <Form.Label>author:</Form.Label>
+        <Form.Control
           id='author'
           type='text'
           value={author}
@@ -48,10 +49,10 @@ const BlogForm = ({ createBlog }) => {
           onChange={handleAuthorChange}
           placeholder='author'
         />
-      </div>
-      <div>
-        url
-        <input
+      </FormGroup>
+      <FormGroup>
+        <Form.Label>url:</Form.Label>
+        <Form.Control
           id='url'
           type='text'
           value={url}
@@ -59,11 +60,11 @@ const BlogForm = ({ createBlog }) => {
           onChange={handleUrlChange}
           placeholder='url'
         />
-      </div>
+      </FormGroup>
       <div>
-        <button type='submit'>create</button>
+        <Button type='submit'>create</Button>
       </div>
-    </form>
+    </Form>
   )
 }
 

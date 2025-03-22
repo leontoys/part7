@@ -1,3 +1,4 @@
+import { Form, Button } from 'react-bootstrap'
 import { useState, useEffect, useRef,  useReducer } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -15,32 +16,32 @@ const LoginForm = (props) => {
 
   return (
     <div>
-      <form onSubmit={props.handleLogin}>
+      <Form onSubmit={props.handleLogin}>
         <h2>login to application</h2>
-        <div>
-      username
-          <input
+        <Form.Group>
+          <Form.Label>username:</Form.Label>
+          <Form.Control
             id='username'
             type='text'
             value={props.username}
             name='Username'
             onChange={({ target }) => props.setUsername(target.value)}
           />
-        </div>
-        <div>
-      password
-          <input
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>password:</Form.Label>
+          <Form.Control
             id='password'
             type='password'
             value={props.password}
             name='Password'
             onChange={({ target }) => props.setPassword(target.value)}
           />
-        </div>
-        <button id='login-button' type='submit'>
+        </Form.Group>
+        <Button id='login-button' type='submit'>
       login
-        </button>
-      </form>
+        </Button>
+      </Form>
     </div>
   )
 }
@@ -342,7 +343,7 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className='container'>
       <Router>
         <Notification message={notification.message} className={notification.className} />
         <div>
@@ -352,7 +353,7 @@ const App = () => {
             <Link to='/users'> users </Link>
             {user &&
               <p>
-                {user.name} logged in <button onClick={handleLogout}>logout</button>
+                {user.name} logged in <Button onClick={handleLogout}>logout</Button>
               </p>}
           </nav>
         </div>

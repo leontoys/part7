@@ -1,3 +1,4 @@
+import { Form, Button } from 'react-bootstrap'
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { BrowserRouter as Router, Link, useParams } from 'react-router-dom'
@@ -67,17 +68,17 @@ const Blog = ({ blogs, updateBlog, deleteBlog, addComments }) => {
       <div style={blogStyle} className="blog">
         <h2>{blog.title} {blog.author}</h2>
         <div>{blog.url}</div>
-        {blog.likes} <button onClick={likeBlog}>like</button>
+        {blog.likes} <Button variant='success' onClick={likeBlog}>like</Button>
         <p>added by {blog.user.username}</p>
         <div>
-          <button onClick={removeBlog}>delete</button>
+          <Button  variant='danger' onClick={removeBlog}>delete</Button>
         </div>
       </div>
       <div>
         <h2>comments</h2>
         <form onSubmit={handleSubmit}>
           <input value={comment} onChange={ (e) => setComment(e.target.value)}/>
-          <button type='submit'>add comment</button>
+          <Button variant='info' type='submit'>add comment</Button>
         </form>
         {blog.comments &&
         <ul>
