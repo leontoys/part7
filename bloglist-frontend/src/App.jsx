@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef,  useReducer } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+import userSerivce from './services/users'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { act } from 'react'
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -266,11 +267,57 @@ const App = () => {
     )
   }
 
+  const response = useQuery(({
+    queryKey : ['users'],
+    queryFn : userSerivce.getAll
+  }))
+
+  const users = response.data || []
+
+  const Users = () => {
+    return(
+      <div>
+        <h2>Users</h2>
+        <h3>blogs created</h3>
+        {users.map(user => (
+          <div key={user.id}>
+            <Link to={`/users/${user.id}`}>{user.name}</Link>
+            <span>{user.blogs.length}</span>
+          </div>
+        ))}
+      </div>)
+
+
+  }
+
+  const User = ({ users }) => {
+    const id = useParams().id
+    const user = users.find(user => user.id === id)
+    if(!user) return null//to prevent error
+    return(
+      <div>
+        <h2>{user.name}</h2>
+        <h3>added blogs</h3>
+        <ul>
+          {user.blogs.map( blog => <li key={blog.id}>{blog.title}</li> )}
+        </ul>
+      </div>)
+  }
+
   return (
     <div>
       <Notification message={notification.message} className={notification.className} />
       {!user && loginForm()}
       {user && blogForm()}
+      <Router>
+        <div>
+
+        </div>
+        <Routes>
+          <Route path='/users' element={<Users/>}></Route>
+          <Route path='/users/:id' element={<User users={users}/>}></Route>
+        </Routes>
+      </Router>
     </div>
   )
 }
