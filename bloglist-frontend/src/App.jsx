@@ -13,80 +13,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   //const [user, setUser] = useState(null)
-  //useReducer
-  const notificationReducer = (state,action) => {
-    console.log('action',action)
-    switch(action.type){
-    case 'ERROR_LOGIN' :
-      return {
-        message: 'user name or password is wrong',
-        className : 'error'
-      }
-    case 'ERROR_LOGOUT' :
-      return {
-        message: 'logout failed',
-        className : 'error'
-      }
-    case 'SUCCESS_ADDBLOG' :
-      return {
-        message: 'blog added',
-        className : 'notification'
-      }
-    case 'ERROR_ADDBLOG':
-      return{
-        message : 'error creating blog',
-        className : 'error'
-      }
-    case 'SUCCESS_UPDATEBLOG':
-      return{
-        message : 'liked blog',
-        className : 'notification'
-      }
-    case 'ERROR_UPDATEBLOG':
-      return{
-        message : 'error liking blog',
-        className : 'error'
-      }
-    case 'SUCCESS_DELETEBLOG' :
-      return {
-        message: 'successfully deleted blog',
-        className : 'notification'
-      }
-    case 'ERROR_DELETEBLOG':
-      return{
-        message : 'error deleting blog',
-        className : 'error'
-      }
-    case 'CLEAR' :
-      return {
-        message: '',
-        className : ''
-      }
-    default:
-      state
-    }
-  }
-  const userReducer = (state,action) => {
-    switch(action.type){
-    case 'LOGIN':
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(action.payload))
-      blogService.setToken(action.payload.token)
-      setUsername('')
-      setPassword('')
-      return action.payload//user object
-    case 'LOGOUT':
-      blogService.setToken('')
-      window.localStorage.clear()
-      return null
-    case 'CACHE':
-      blogService.setToken(action.payload.token)
-      return action.payload
-    default:
-      return state
-    }
-  }
-  const [notification,notificationDispatch] = useReducer(notificationReducer,{ message:'',className:'' })
-  const [user,userDispatch] = useReducer(userReducer,null)
+
 
   //Query Client and Mutation
   const queryClient = useQueryClient()
@@ -145,6 +72,61 @@ const App = () => {
     }
   })
 
+  //useReducer
+  const notificationReducer = (state,action) => {
+    console.log('action',action)
+    switch(action.type){
+    case 'ERROR_LOGIN' :
+      return {
+        message: 'user name or password is wrong',
+        className : 'error'
+      }
+    case 'ERROR_LOGOUT' :
+      return {
+        message: 'logout failed',
+        className : 'error'
+      }
+    case 'SUCCESS_ADDBLOG' :
+      return {
+        message: 'blog added',
+        className : 'notification'
+      }
+    case 'ERROR_ADDBLOG':
+      return{
+        message : 'error creating blog',
+        className : 'error'
+      }
+    case 'SUCCESS_UPDATEBLOG':
+      return{
+        message : 'liked blog',
+        className : 'notification'
+      }
+    case 'ERROR_UPDATEBLOG':
+      return{
+        message : 'error liking blog',
+        className : 'error'
+      }
+    case 'SUCCESS_DELETEBLOG' :
+      return {
+        message: 'successfully deleted blog',
+        className : 'notification'
+      }
+    case 'ERROR_DELETEBLOG':
+      return{
+        message : 'error deleting blog',
+        className : 'error'
+      }
+    case 'CLEAR' :
+      return {
+        message: '',
+        className : ''
+      }
+    default:
+      state
+    }
+  }
+
+
   const result = useQuery({
     queryKey : ['blogs'],
     queryFn : blogService.getAll
@@ -154,6 +136,28 @@ const App = () => {
 
   //reference
   const blogFormRef = useRef()
+
+  const userReducer = (state,action) => {
+    switch(action.type){
+    case 'LOGIN':
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(action.payload))
+      blogService.setToken(action.payload.token)
+      setUsername('')
+      setPassword('')
+      return action.payload//user object
+    case 'LOGOUT':
+      blogService.setToken('')
+      window.localStorage.clear()
+      return null
+    case 'CACHE':
+      blogService.setToken(action.payload.token)
+      return action.payload
+    default:
+      return state
+    }
+  }
+  const [notification,notificationDispatch] = useReducer(notificationReducer,{ message:'',className:'' })
+  const [user,userDispatch] = useReducer(userReducer,null)
 
   useEffect(() => {
     console.log('use effect -- check if user already loggd in')
@@ -246,19 +250,10 @@ const App = () => {
     //console.log(blogs)
     return (
       <div>
-        <h2>blogs</h2>
-        <p>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </p>
         <Togglable buttonLabel='new blog' ref={blogFormRef}>
           <BlogForm createBlog={addBlog}></BlogForm>
         </Togglable>
         <br />
-        {blogs.map((blog) => (
-          <Link key={blog.id} to={`/blogs/${blog.id}`}>
-            <p>{blog.title} {blog.author}</p>
-          </Link>
-        ))}
       </div>
     )
   }
@@ -300,15 +295,46 @@ const App = () => {
       </div>)
   }
 
+  const Home = () => {
+    return(
+      <div>
+        {user && blogForm()}
+      </div>
+    )
+  }
+
+  const Blogs = () => {
+    return(
+      <div>
+        <h2>blogs</h2>
+        {blogs.map((blog) => (
+          <Link key={blog.id} to={`/blogs/${blog.id}`}>
+            <p>{blog.title} {blog.author}</p>
+          </Link>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div>
       <Router>
         <Notification message={notification.message} className={notification.className} />
+        <div>
+          <Link to='/'>home</Link>
+          <Link to='/blogs'> blogs </Link>
+          <Link to='/users'> users </Link>
+          {user &&
+            <p>
+              {user.name} logged in <button onClick={handleLogout}>logout</button>
+            </p>}
+        </div>
         {!user && loginForm()}
-        {user && blogForm()}
         <Routes>
+          <Route path='/' element={<Home/>}></Route>
           <Route path='/users' element={<Users/>}></Route>
           <Route path='/users/:id' element={<User users={users}/>}></Route>
+          <Route path='/blogs' element={<Blogs/>}></Route>
           <Route path='/blogs/:id' element={<Blog blogs={blogs}
             updateBlog={updateBlog} deleteBlog={deleteBlog}/>}></Route>
         </Routes>
