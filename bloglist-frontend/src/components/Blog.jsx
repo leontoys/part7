@@ -2,8 +2,9 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { BrowserRouter as Router, Link, useParams } from 'react-router-dom'
 
-const Blog = ({ blogs, updateBlog, deleteBlog }) => {
+const Blog = ({ blogs, updateBlog, deleteBlog, addComments }) => {
   const [likes, setLikes] = useState('')
+  const [comment,setComment] = useState('')
 
   const id = useParams().id
   console.log(id)
@@ -44,6 +45,22 @@ const Blog = ({ blogs, updateBlog, deleteBlog }) => {
     }
   }
 
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    console.log('blog', blog)
+    const comments = blog.comments.concat(comment)
+    addComments({
+      id: blog.id,
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes,
+      user: blog.user,
+      comments : comments
+    })
+    setComment('')
+  }
+
 
   return (
     <>
@@ -55,10 +72,14 @@ const Blog = ({ blogs, updateBlog, deleteBlog }) => {
       </div>
       <div>
         <h2>comments</h2>
-        <form>
-          <input/>
-          <button></button>
+        <form onSubmit={handleSubmit}>
+          <input value={comment} onChange={ (e) => setComment(e.target.value)}/>
+          <button type='submit'>add comment</button>
         </form>
+        {blog.comments &&
+        <ul>
+          {blog.comments.map( comment => <li key={comment}>{comment}</li>)}
+        </ul>}
       </div>
     </>
   )

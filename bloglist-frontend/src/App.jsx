@@ -86,6 +86,23 @@ const App = () => {
       setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
     }
   })
+  const updateCommentsMutation = useMutation({
+    mutationFn : blogService.addComments,
+    onSuccess : (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])||[]
+      console.log(updatedBlog,blogs)
+      const updatedBlogs = blogs.map(blog => blog.id===updatedBlog.id?updatedBlog:blog)
+      console.log(updatedBlogs)
+      queryClient.setQueryData(['blogs'],updatedBlogs)
+      //notificationDispatch({ type : 'SUCCESS_UPDATEBLOG' })
+      //setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
+    },
+    onError : (exception) => {
+      console.log(exception.message)
+      notificationDispatch({ type : 'ERROR_UPDATEBLOG' })
+      setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
+    }
+  })
   const deleteBlogMutation = useMutation({
     mutationFn : blogService.deleteBlog,
     onSuccess : (id) => {
@@ -245,6 +262,10 @@ const App = () => {
     updateBlogMutation.mutate(blogObject)
   }
 
+  const addComments = (blogObject) => {
+    updateCommentsMutation.mutate(blogObject)
+  }
+
   const deleteBlog = (id) => {
     deleteBlogMutation.mutate(id)
   }
@@ -346,7 +367,8 @@ const App = () => {
           <Route path='/users/:id' element={<User users={users}/>}></Route>
           <Route path='/blogs' element={user?<Blogs/>:<Navigate replace to='/'/>}></Route>
           <Route path='/blogs/:id' element={<Blog blogs={blogs}
-            updateBlog={updateBlog} deleteBlog={deleteBlog}/>}></Route>
+            updateBlog={updateBlog} deleteBlog={deleteBlog} addComments={addComments}
+          />}></Route>
         </Routes>
       </Router>
     </div>

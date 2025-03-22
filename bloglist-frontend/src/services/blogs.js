@@ -35,6 +35,25 @@ const update = async (blogObject) => {
   }
 }
 
+const addComments = async (blogObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  console.log('---blog service update---')
+  try {
+    const response = await axios.put(
+      `${baseUrl}/${blogObject.id}/comments`,
+      blogObject,
+      config,
+    )
+    console.log('response.data', response.data)
+    return response.data
+  } catch (error) {
+    console.log('error', error)
+    return
+  }
+}
+
 const deleteBlog = async (blogId) => {
   console.log('---blog service delete---')
   const config = {
@@ -54,4 +73,4 @@ const setToken = (newToken) => {
   token = `Bearer ${newToken}`
 }
 
-export default { getAll, setToken, create, update, deleteBlog }
+export default { getAll, setToken, create, update, deleteBlog, addComments }
