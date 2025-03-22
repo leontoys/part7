@@ -258,13 +258,6 @@ const App = () => {
           <Link key={blog.id} to={`/blogs/${blog.id}`}>
             <p>{blog.title} {blog.author}</p>
           </Link>
-          // <Blog
-          //   key={blog.id}
-          //   blog={blog}
-          //   loggedUser={user}
-          //   updateBlog={updateBlog}
-          //   deleteBlog={deleteBlog}
-          // />
         ))}
       </div>
     )
@@ -313,12 +306,11 @@ const App = () => {
         <Notification message={notification.message} className={notification.className} />
         {!user && loginForm()}
         {user && blogForm()}
-        <div>
-
-        </div>
         <Routes>
           <Route path='/users' element={<Users/>}></Route>
           <Route path='/users/:id' element={<User users={users}/>}></Route>
+          <Route path='/blogs/:id' element={<Blog blogs={blogs}
+            updateBlog={updateBlog} deleteBlog={deleteBlog}/>}></Route>
         </Routes>
       </Router>
     </div>

@@ -1,17 +1,16 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
-import { BrowserRouter as Router, Link  } from 'react-router-dom'
+import { BrowserRouter as Router, Link, useParams } from 'react-router-dom'
 
-const Blog = ({ blog, updateBlog, loggedUser, deleteBlog }) => {
-  const [visible, setVisible] = useState(false)
+const Blog = ({ blogs, updateBlog, deleteBlog }) => {
   const [likes, setLikes] = useState('')
 
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
-
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
+  const id = useParams().id
+  console.log(id)
+  blogs.map( blog => console.log(blog))
+  const blog = blogs.find( blog => blog.id === id )
+  if(!blog ) return
+  console.log(blog)
 
   const blogStyle = {
     paddingTop: 10,
@@ -45,43 +44,14 @@ const Blog = ({ blog, updateBlog, loggedUser, deleteBlog }) => {
     }
   }
 
-  //console.log('logged user', loggedUser.username)
-  //console.log('blog user', blog.user.username)
+
   return (
     <div style={blogStyle} className="blog">
-      <Router>
-        <div style={hideWhenVisible} className="blogInfo">
-          <Link to={`/blogs/${blog.id}`}>
-            {blog.title} {blog.author}
-          </Link>
-          {/* <button onClick={toggleVisibility}>view</button> */}
-        </div>
-      {/* <div style={showWhenVisible} className="blogDetails">
-        <div>
-          {blog.title} {blog.author}{''}
-          <button onClick={toggleVisibility}>cancel</button>
-        </div>
-        <div>{blog.url}</div>
-        <div>
-          {blog.likes} <button onClick={likeBlog}>like</button>
-        </div>
-        {blog.user ? <div>{blog.user.username}</div> : <div></div>}
-        {blog.user?.username && loggedUser.username === blog.user.username && (
-          <div>
-            <button onClick={removeBlog}>delete</button>
-          </div>
-        )}
-      </div> */}
-      </Router>
+      <h2>{blog.title} {blog.author}</h2>
+      <div>{blog.url}</div>
+      {blog.likes} <button onClick={likeBlog}>like</button>
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  updateBlog: PropTypes.func.isRequired,
-  loggedUser: PropTypes.object.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
 }
 
 export default Blog
