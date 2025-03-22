@@ -1,4 +1,4 @@
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button, Table } from 'react-bootstrap'
 import { useState, useEffect, useRef,  useReducer } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -295,13 +295,21 @@ const App = () => {
     return(
       <div>
         <h2>Users</h2>
-        <h3>blogs created</h3>
-        {users.map(user => (
-          <div key={user.id}>
-            <Link to={`/users/${user.id}`}>{user.name}</Link>
-            <span>{user.blogs.length}</span>
-          </div>
-        ))}
+        <Table striped>
+          <tbody>
+            <tr>
+              <td>user</td>
+              <td>blogs created</td>
+            </tr>
+            {users.map(user => (
+              <tr key={user.id}>
+                <td><Link to={`/users/${user.id}`}>{user.name}</Link></td>
+                <td>{user.blogs.length}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
       </div>)
 
 
