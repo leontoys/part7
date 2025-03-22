@@ -6,14 +6,12 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { act } from 'react'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [message, setMessage] = useState({ message: null, className: null })
-
+  //const [user, setUser] = useState(null)
   //useReducer
   const notificationReducer = (state,action) => {
     console.log('action',action)
@@ -30,7 +28,7 @@ const App = () => {
       }
     case 'SUCCESS_ADDBLOG' :
       return {
-        message: action.payload,
+        message: 'blog added',
         className : 'notification'
       }
     case 'ERROR_ADDBLOG':
@@ -67,8 +65,27 @@ const App = () => {
       state
     }
   }
-
+  const userReducer = (state,action) => {
+    switch(action.type){
+    case 'LOGIN':
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(action.payload))
+      blogService.setToken(action.payload.token)
+      setUsername('')
+      setPassword('')
+      return action.payload//user object
+    case 'LOGOUT':
+      blogService.setToken('')
+      window.localStorage.clear()
+      return null
+    case 'CACHE':
+      blogService.setToken(action.payload.token)
+      return action.payload
+    default:
+      return state
+    }
+  }
   const [notification,notificationDispatch] = useReducer(notificationReducer,{ message:'',className:'' })
+  const [user,userDispatch] = useReducer(userReducer,null)
 
   //Query Client and Mutation
   const queryClient = useQueryClient()
@@ -80,7 +97,7 @@ const App = () => {
       console.log('blogs',blogs)
       queryClient.setQueryData(['blogs'],blogs.concat(returnedBlog) )
 
-      notificationDispatch({ type : 'SUCCESS_ADDBLOG', payload :`blog ${returnedBlog.blog} added` })
+      notificationDispatch({ type : 'SUCCESS_ADDBLOG'})
       setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
     },
     onError : (exception) => {
@@ -141,17 +158,11 @@ const App = () => {
     console.log('use effect -- check if user already loggd in')
     // Retrieve the JSON string from localStorage
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-
     // Check if the JSON string exists
     if (loggedUserJSON) {
       // Parse the JSON string into a JavaScript object
-      const user = JSON.parse(loggedUserJSON)
-
-      // Update the state with the user object
-      setUser(user)
-
-      // Set the token for the blogService
-      blogService.setToken(user.token)
+      const response = JSON.parse(loggedUserJSON)
+      userDispatch({ type:'CACHE', payload:response })
     }
   }, []) // The empty dependency array means this effect runs only once after the initial render
 
@@ -159,20 +170,14 @@ const App = () => {
   const handleLogin = async (event) => {
     console.log('---handle login')
     event.preventDefault()
-
     try {
       const user = await loginService.login({
         username,
         password,
       })
-      console.log('---set token---')
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (exception) {
-
+      userDispatch({ type:'LOGIN', payload:user })
+    }
+    catch (exception) {
       notificationDispatch({ type : 'ERROR_LOGIN' })
       setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
 
@@ -183,13 +188,11 @@ const App = () => {
     console.log('---handle logout')
     event.preventDefault()
     try {
-      window.localStorage.clear()
-      setUser(null)
-    } catch (exception) {
-
+      userDispatch({ type:'LOGOUT' })
+    }
+    catch (exception) {
       notificationDispatch({ type : 'ERROR_LOGOUT' })
       setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
-
     }
   }
 
