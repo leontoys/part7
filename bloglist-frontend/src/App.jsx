@@ -94,8 +94,6 @@ const App = () => {
       const updatedBlogs = blogs.map(blog => blog.id===updatedBlog.id?updatedBlog:blog)
       console.log(updatedBlogs)
       queryClient.setQueryData(['blogs'],updatedBlogs)
-      //notificationDispatch({ type : 'SUCCESS_UPDATEBLOG' })
-      //setTimeout(() => notificationDispatch({ type : 'CLEAR' }), 5000)
     },
     onError : (exception) => {
       console.log(exception.message)
